@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net6.0-windows</TargetFramework>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
+	<ItemGroup>
+		<ProjectReference Include="..\CapaEntidad\CapaEntidad.csproj" />
+		<ProjectReference Include="..\CapaUtilidades\CapaUtilidades.csproj" />
+	</ItemGroup>
 </Project>

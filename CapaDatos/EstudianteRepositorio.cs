@@ -1,5 +1,9 @@
-﻿using System.Text.Json;
-using CapaErrores;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using CapaEntidad;
+using CapaUtilidades;
 
 namespace CapaDatos
 {
@@ -102,6 +106,11 @@ namespace CapaDatos
             });
 
             File.WriteAllText(rutaArchivo, json);
+        }
+
+        List<Estudiante> IRepositorioEntidad<Estudiante>.Listar()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

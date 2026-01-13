@@ -1,17 +1,35 @@
+using System;
+using System.Windows.Forms;
+using CapaEntidad;
+
 namespace ProyectoDeProgramacion2
 {
-    internal static class Program
+    static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            // Mostrar formulario de login
+            FormLogin formLogin = new FormLogin();
+
+            if (formLogin.ShowDialog() == DialogResult.OK)
+            {
+                // Login exitoso
+                var usuario = formLogin.UsuarioAutenticado;
+
+                MessageBox.Show(
+                    $"Bienvenido {usuario.NombreCompleto}\nRol: {usuario.Rol}",
+                    "Acceso Concedido",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+
+                // Aquí abrirías tu Form1 o el formulario correspondiente
+                // Application.Run(new Form1(usuario));
+            }
         }
     }
 }

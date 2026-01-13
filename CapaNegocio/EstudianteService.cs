@@ -1,76 +1,140 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using CapaDatos;
 using CapaEntidad;
-using CapaErrores;
-using ProyectProgra2;
+using CapaUtilidades;
 
-namespace ProyectoFinal.Negocio
+namespace CapaNegocio  // ← CAMBIAR namespace
 {
     public class EstudianteService
     {
-        private IRepositorioEntidad<EstudianteService> repositorio;
+        private IRepositorioEntidad<Estudiante> repositorio;  // ✅ CORREGIDO
 
-        public EstudianteService(IRepositorioEntidad<EstudianteService> repo)
+        public EstudianteService()
+        {
+            // Inicializar con el repositorio JSON
+            repositorio = new EstudianteRepositorioJson();
+        }
+
+        public EstudianteService(IRepositorioEntidad<Estudiante> repo)  // ✅ CORREGIDO
         {
             repositorio = repo;
         }
-        public List<EstudianteService> ListarEstudiantes()
-        {
-            return repositorio.Listar();
-        }
 
-        // Metodo para registrar un estudiante con manejo de excepciones
-        public void RegistrarEstudiante(EstudianteService estudiante)
+        public List<Estudiante> ListarEstudiantes()  // ✅ CORREGIDO
         {
             try
             {
-                // Validacion: estudiante no puede ser null
-                if (estudiante == null)
-                    throw new ArgumentNullException("El estudiante no puede ser null");
+                return repositorio.Listar();
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.RegistrarError(ex, nameof(EstudianteService), nameof(ListarEstudiantes));
+                throw;
+            }
+        }
 
-                // Validacion de formato: nombre obligatorio
-                if (string.IsNullOrWhiteSpace(estudiante.Nombre))
-                    throw new FormatException("El nombre del estudiante no puede estar vacio");
+        // Método para registrar un estudiante con manejo de excepciones
+        public void RegistrarEstudiante(Estudiante estudiante)  // ✅ CORREGIDO
+        {
+            try
+            {
+                // Validación: estudiante no puede ser null
+                if (estudiante == null)
+                    throw new ArgumentNullException(nameof(estudiante), "El estudiante no puede ser null");
+
+                // Validación de formato: nombre obligatorio
+                if (string.IsNullOrWhiteSpace(estudiante.Nombre))  // ✅ AHORA SÍ FUNCIONA
+                    throw new FormatException("El nombre del estudiante no puede estar vacío");
 
                 // Se intenta registrar en el repositorio
                 repositorio.Agregar(estudiante);
             }
-            // Error de datos mal formados
             catch (FormatException ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(EstudianteService), nameof(RegistrarEstudiante));
-                throw new Exception("Error de formato al intentar registrar el estudiante.");
+                throw new Exception("Error de formato al intentar registrar el estudiante.", ex);
             }
-            // Archivo faltante
             catch (FileNotFoundException ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(EstudianteService), nameof(RegistrarEstudiante));
-                throw new Exception("No se encontro el archivo de estudiantes.");
+                throw new Exception("No se encontró el archivo de estudiantes.", ex);
             }
-            // Error en procesamiento de JSON
             catch (JsonException ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(EstudianteService), nameof(RegistrarEstudiante));
-                throw new Exception("Error al procesar los datos JSON de estudiantes.");
+                throw new Exception("Error al procesar los datos JSON de estudiantes.", ex);
             }
-            // Error del sistema de archivos
             catch (IOException ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(EstudianteService), nameof(RegistrarEstudiante));
-                throw new Exception("Error de lectura o escritura del archivo estudiantes.");
+                throw new Exception("Error de lectura o escritura del archivo estudiantes.", ex);
             }
-            // Error desconocido
             catch (Exception ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(EstudianteService), nameof(RegistrarEstudiante));
-                throw new Exception("Ocurrio un error inesperado al registrar el estudiante.");
+                throw new Exception("Ocurrió un error inesperado al registrar el estudiante.", ex);
             }
-            finally
+        }
+
+        public void AgregarEstudiante(Estudiante estudiante)
+        {
+            try
             {
-                // Se ejecuta en todos los casos
-                Console.WriteLine("Operacion de registro de estudiante finalizada.");
+                if (estudiante == null)
+                    throw new ArgumentNullException(nameof(estudiante));
+
+                repositorio.Agregar(estudiante);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.RegistrarError(ex, nameof(EstudianteService), nameof(AgregarEstudiante));
+                throw;
+            }
+        }
+
+        public Estudiante BuscarEstudiantePorId(int id)
+        {
+            try
+            {
+                return repositorio.BuscarPorId(id);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.RegistrarError(ex, nameof(EstudianteService), nameof(BuscarEstudiantePorId));
+                throw;
+            }
+        }
+
+        public void ModificarEstudiante(Estudiante estudiante)
+        {
+            try
+            {
+                if (estudiante == null)
+                    throw new ArgumentNullException(nameof(estudiante));
+
+                repositorio.Modificar(estudiante);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.RegistrarError(ex, nameof(EstudianteService), nameof(ModificarEstudiante));
+                throw;
+            }
+        }
+
+        public void EliminarEstudiante(int id)
+        {
+            try
+            {
+                repositorio.Eliminar(id);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.RegistrarError(ex, nameof(EstudianteService), nameof(EliminarEstudiante));
+                throw;
             }
         }
     }
 }
-

@@ -1,4 +1,6 @@
-﻿using CapaErrores;
+﻿using System;
+using System.Collections.Generic;
+using CapaUtilidades;
 
 namespace CapaDatos
 {

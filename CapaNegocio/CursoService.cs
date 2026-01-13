@@ -1,82 +1,142 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using CapaDatos;
+using CapaEntidad;
+using CapaUtilidades;
 
-
-namespace ProyectProgra2.Negocio
+namespace CapaNegocio  // ← CAMBIAR namespace
 {
     public class CursoService
     {
         private IRepositorioEntidad<Curso> repositorio;
+
+        public CursoService()
+        {
+            // Inicializar con el repositorio JSON
+            // Asume que tienes CursoRepositorioJson en CapaDatos
+            repositorio = new CursoRepositorioJson();
+        }
 
         public CursoService(IRepositorioEntidad<Curso> repo)
         {
             repositorio = repo;
         }
 
-        // Metodo para registrar un curso con manejo de excepciones
+        // Método para registrar un curso con manejo de excepciones
         public void RegistrarCurso(Curso curso)
         {
             try
             {
-                // Validacion: Evitar objetos nulos
+                // Validación: Evitar objetos nulos
                 if (curso == null)
-                    throw new ArgumentNullException("El curso no puede ser null");
+                    throw new ArgumentNullException(nameof(curso), "El curso no puede ser null");
 
-                // Validacion de formato: ID debe ser positivo
+                // Validación de formato: ID debe ser positivo
                 if (curso.Id <= 0)
-                    throw new FormatException("El ID del curso debe ser un numero positivo");
+                    throw new FormatException("El ID del curso debe ser un número positivo");
 
                 // Si pasa validaciones, intentamos agregarlo al repositorio
                 repositorio.Agregar(curso);
             }
-            // Error de formato (ideal para valores invalidos)
             catch (FormatException ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(CursoService), nameof(RegistrarCurso));
-                throw new Exception("Error de formato al intentar registrar el curso.");
+                throw new Exception("Error de formato al intentar registrar el curso.", ex);
             }
-            // Archivo no encontrado
             catch (FileNotFoundException ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(CursoService), nameof(RegistrarCurso));
-                throw new Exception("No se encontro el archivo de cursos.");
+                throw new Exception("No se encontró el archivo de cursos.", ex);
             }
-            // Error al parsear JSON
             catch (JsonException ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(CursoService), nameof(RegistrarCurso));
-                throw new Exception("Error al procesar los datos JSON de cursos.");
+                throw new Exception("Error al procesar los datos JSON de cursos.", ex);
             }
-            // Problemas con el sistema de archivos
             catch (IOException ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(CursoService), nameof(RegistrarCurso));
-                throw new Exception("Error de lectura o escritura del archivo cursos.");
+                throw new Exception("Error de lectura o escritura del archivo cursos.", ex);
             }
-            // Cualquier error inesperado
             catch (Exception ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(CursoService), nameof(RegistrarCurso));
-                throw new Exception("Ocurrio un error inesperado al registrar el curso.");
+                throw new Exception("Ocurrió un error inesperado al registrar el curso.", ex);
             }
-            finally
+        }
+
+        // ✅ CORREGIDO: Debe recibir Curso, no CursoService
+        public void AgregarCurso(Curso curso)
+        {
+            try
             {
-                // Siempre se ejecuta
-                Console.WriteLine("Operacion de registro de curso finalizada.");
+                if (curso == null)
+                    throw new ArgumentNullException(nameof(curso));
+
+                repositorio.Agregar(curso);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.RegistrarError(ex, nameof(CursoService), nameof(AgregarCurso));
+                throw;
             }
         }
 
-        public void AgregarCurso(CursoService c)
+        public List<Curso> ObtenerCursos()
         {
-            repositorio.Agregar(c);
+            try
+            {
+                return repositorio.Listar();
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.RegistrarError(ex, nameof(CursoService), nameof(ObtenerCursos));
+                throw;
+            }
         }
 
-        public List<CursoService> ListarCursos()
+        public Curso BuscarCursoPorId(int id)
         {
-            return repositorio.Listar();
+            try
+            {
+                return repositorio.BuscarPorId(id);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.RegistrarError(ex, nameof(CursoService), nameof(BuscarCursoPorId));
+                throw;
+            }
+        }
+
+        public void ModificarCurso(Curso curso)
+        {
+            try
+            {
+                if (curso == null)
+                    throw new ArgumentNullException(nameof(curso));
+
+                repositorio.Modificar(curso);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.RegistrarError(ex, nameof(CursoService), nameof(ModificarCurso));
+                throw;
+            }
+        }
+
+        public void EliminarCurso(int id)
+        {
+            try
+            {
+                repositorio.Eliminar(id);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.RegistrarError(ex, nameof(CursoService), nameof(EliminarCurso));
+                throw;
+            }
         }
     }
 }
-
-
-
