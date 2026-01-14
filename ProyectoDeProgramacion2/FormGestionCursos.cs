@@ -192,9 +192,16 @@ namespace ProyectoDeProgramacion2
 
                 if (dgvCursos.Columns.Count > 0)
                 {
-                    dgvCursos.Columns["Id"].Visible = false;
-                    dgvCursos.Columns["ProfesorId"].Visible = false;
-                    dgvCursos.Columns["EstudiantesInscritos"].Visible = false;
+                    if (dgvCursos.Columns["Id"] != null)
+                        dgvCursos.Columns["Id"].Visible = false;
+
+                    if (dgvCursos.Columns["ProfesorId"] != null)
+                        dgvCursos.Columns["ProfesorId"].Visible = false;
+
+                    if (dgvCursos.Columns.Contains("EstudiantesInscritos"))
+                    {
+                        dgvCursos.Columns["EstudiantesInscritos"].Visible = false;
+                    }
                 }
             }
             catch (Exception ex)

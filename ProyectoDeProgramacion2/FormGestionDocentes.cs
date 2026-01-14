@@ -149,8 +149,13 @@ namespace ProyectoDeProgramacion2
 
                 if (dgvDocentes.Columns.Count > 0)
                 {
-                    dgvDocentes.Columns["Id"].Visible = false;
-                    dgvDocentes.Columns["CursosAsignados"].Visible = false;
+                    if (dgvDocentes.Columns["Id"] != null)
+                        dgvDocentes.Columns["Id"].Visible = false;
+
+                    if (dgvDocentes.Columns.Contains("CursosAsignados"))
+                    {
+                        dgvDocentes.Columns["CursosAsignados"].Visible = false;
+                    }
                 }
             }
             catch (Exception ex)

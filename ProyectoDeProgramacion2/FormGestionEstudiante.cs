@@ -157,8 +157,15 @@ namespace ProyectoDeProgramacion2
 
                 if (dgvEstudiantes.Columns.Count > 0)
                 {
-                    dgvEstudiantes.Columns["Id"].Visible = false;
-                    dgvEstudiantes.Columns["CursosInscritos"].Visible = false;
+                    // Ocultar ID si existe
+                    if (dgvEstudiantes.Columns["Id"] != null)
+                        dgvEstudiantes.Columns["Id"].Visible = false;
+
+                    // CORRECCIÓN: Verificar si existe la columna de la lista antes de ocultarla
+                    if (dgvEstudiantes.Columns.Contains("CursosInscritos"))
+                    {
+                        dgvEstudiantes.Columns["CursosInscritos"].Visible = false;
+                    }
                 }
             }
             catch (Exception ex)
