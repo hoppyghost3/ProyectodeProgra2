@@ -208,7 +208,7 @@ namespace ProyectoDeProgramacion2
             lblTitulo.Text = "INICIAR SESIÓN";
             btnAccion.Text = "INICIAR SESIÓN";
             btnAccion.Location = new Point(50, 270);
-            btnCambiarModo.Text = "¿No tienes cuenta? Regístrate";
+            btnCambiarModo.Text = "Registro";
             btnCambiarModo.Location = new Point(50, 320);
 
             // Ocultar campos de registro
@@ -320,6 +320,11 @@ namespace ProyectoDeProgramacion2
                 cboRol.SelectedIndex = 0;
             chkMostrarContrasena.Checked = false;
             txtUsuario.Focus();
+        }
+
+        private void FormLogin_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

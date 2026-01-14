@@ -1,10 +1,9 @@
 using System;
 using System.Windows.Forms;
-using CapaEntidad;
 
 namespace ProyectoDeProgramacion2
 {
-    static class Program
+    internal static class Program
     {
         [STAThread]
         static void Main()
@@ -12,23 +11,19 @@ namespace ProyectoDeProgramacion2
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Mostrar formulario de login
+            // Mostrar formulario de login primero
             FormLogin formLogin = new FormLogin();
 
             if (formLogin.ShowDialog() == DialogResult.OK)
             {
-                // Login exitoso
+                // Si el login fue exitoso, abrir el menú principal
                 var usuario = formLogin.UsuarioAutenticado;
-
-                MessageBox.Show(
-                    $"Bienvenido {usuario.NombreCompleto}\nRol: {usuario.Rol}",
-                    "Acceso Concedido",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
-                );
-
-                // Aquí abrirías tu Form1 o el formulario correspondiente
-                // Application.Run(new Form1(usuario));
+                Application.Run(new FormMenuPrincipal(usuario));
+            }
+            else
+            {
+                // Usuario canceló el login, cerrar aplicación
+                Application.Exit();
             }
         }
     }

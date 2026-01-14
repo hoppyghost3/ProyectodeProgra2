@@ -17,10 +17,7 @@ namespace CapaDatos
             try
             {
                 List<Curso> lista = LeerArchivo();
-
-                // Generar ID automático
                 curso.Id = lista.Count > 0 ? lista.Max(c => c.Id) + 1 : 1;
-
                 lista.Add(curso);
                 GuardarArchivo(lista);
             }
@@ -92,7 +89,6 @@ namespace CapaDatos
             }
         }
 
-        // Métodos privados
         private List<Curso> LeerArchivo()
         {
             if (!File.Exists(rutaArchivo))
