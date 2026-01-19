@@ -1,7 +1,6 @@
 ﻿using CapaEntidad;
 using CapaNegocio;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -12,16 +11,21 @@ namespace ProyectoDeProgramacion2
         private AutenticacionService authService;
         private bool modoRegistro = false;
 
-        // Controles
-        private TextBox txtUsuario;
-        private TextBox txtContrasena;
-        private TextBox txtNombreCompleto;
-        private TextBox txtEmail;
+        // Controles existentes
+        private TextBox txtUsuario, txtContrasena, txtNombreCompleto, txtEmail;
         private ComboBox cboRol;
-        private Button btnAccion;
-        private Button btnCambiarModo;
+        private Button btnAccion, btnCambiarModo;
         private CheckBox chkMostrarContrasena;
         private Label lblTitulo;
+
+        // Controles Estudiantes
+        private TextBox txtTelefono, txtCarrera;
+        private NumericUpDown numSemestre;
+        private Label lblTelefono, lblCarrera, lblSemestre;
+
+        // [NUEVO] Controles Docentes
+        private TextBox txtEspecialidad, txtDepartamento;
+        private Label lblEspecialidad, lblDepartamento;
 
         public Usuario UsuarioAutenticado { get; private set; }
 
@@ -34,8 +38,7 @@ namespace ProyectoDeProgramacion2
 
         private void InicializarComponentes()
         {
-            // Configuración del formulario
-            this.Text = "Sistema - Login";
+            this.Text = "Sistema Académico - Acceso";
             this.Size = new Size(450, 500);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -45,160 +48,88 @@ namespace ProyectoDeProgramacion2
             int y = 30;
 
             // Título
-            lblTitulo = new Label
-            {
-                Text = "INICIAR SESIÓN",
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                ForeColor = Color.DodgerBlue,
-                Location = new Point(50, y),
-                Size = new Size(340, 40),
-                TextAlign = ContentAlignment.MiddleCenter
-            };
+            lblTitulo = new Label { Text = "INICIAR SESIÓN", Font = new Font("Segoe UI", 16, FontStyle.Bold), ForeColor = Color.DodgerBlue, Location = new Point(50, y), Size = new Size(340, 40), TextAlign = ContentAlignment.MiddleCenter };
             y += 60;
 
             // Usuario
-            Label lblUsuario = new Label
-            {
-                Text = "Usuario:",
-                Location = new Point(50, y),
-                Size = new Size(100, 20),
-                Font = new Font("Segoe UI", 10)
-            };
-            txtUsuario = new TextBox
-            {
-                Location = new Point(50, y + 25),
-                Size = new Size(340, 25),
-                Font = new Font("Segoe UI", 10)
-            };
-            y += 65;
+            Label lblU = new Label { Text = "Usuario:", Location = new Point(50, y), Size = new Size(100, 20) };
+            txtUsuario = new TextBox { Location = new Point(50, y + 25), Size = new Size(340, 25) };
+            y += 60;
 
             // Contraseña
-            Label lblContrasena = new Label
-            {
-                Text = "Contraseña:",
-                Location = new Point(50, y),
-                Size = new Size(100, 20),
-                Font = new Font("Segoe UI", 10)
-            };
-            txtContrasena = new TextBox
-            {
-                Location = new Point(50, y + 25),
-                Size = new Size(340, 25),
-                PasswordChar = '●',
-                Font = new Font("Segoe UI", 10)
-            };
-            y += 65;
+            Label lblC = new Label { Text = "Contraseña:", Location = new Point(50, y), Size = new Size(100, 20) };
+            txtContrasena = new TextBox { Location = new Point(50, y + 25), Size = new Size(340, 25), PasswordChar = '●' };
+            y += 60;
 
-            // Mostrar contraseña
-            chkMostrarContrasena = new CheckBox
-            {
-                Text = "Mostrar contraseña",
-                Location = new Point(50, y),
-                Size = new Size(150, 20),
-                Font = new Font("Segoe UI", 9)
-            };
-            chkMostrarContrasena.CheckedChanged += (s, e) =>
-                txtContrasena.PasswordChar = chkMostrarContrasena.Checked ? '\0' : '●';
-            y += 35;
+            chkMostrarContrasena = new CheckBox { Text = "Mostrar contraseña", Location = new Point(50, y), Size = new Size(150, 20) };
+            chkMostrarContrasena.CheckedChanged += (s, e) => txtContrasena.PasswordChar = chkMostrarContrasena.Checked ? '\0' : '●';
+            y += 30;
 
-            // Nombre completo (oculto inicialmente)
-            Label lblNombre = new Label
-            {
-                Text = "Nombre Completo:",
-                Location = new Point(50, y),
-                Size = new Size(150, 20),
-                Visible = false,
-                Font = new Font("Segoe UI", 10),
-                Tag = "registro"
-            };
-            txtNombreCompleto = new TextBox
-            {
-                Location = new Point(50, y + 25),
-                Size = new Size(340, 25),
-                Visible = false,
-                Font = new Font("Segoe UI", 10),
-                Tag = "registro"
-            };
-            y += 65;
+            // --- CAMPOS DE REGISTRO BASE ---
 
-            // Email (oculto inicialmente)
-            Label lblEmail = new Label
-            {
-                Text = "Email:",
-                Location = new Point(50, y),
-                Size = new Size(100, 20),
-                Visible = false,
-                Font = new Font("Segoe UI", 10),
-                Tag = "registro"
-            };
-            txtEmail = new TextBox
-            {
-                Location = new Point(50, y + 25),
-                Size = new Size(340, 25),
-                Visible = false,
-                Font = new Font("Segoe UI", 10),
-                Tag = "registro"
-            };
-            y += 65;
+            Label lblN = CrearLabel("Nombre Completo:", y);
+            txtNombreCompleto = CrearTextBox(y + 25);
+            y += 60;
 
-            // Rol (oculto inicialmente)
-            Label lblRol = new Label
-            {
-                Text = "Rol:",
-                Location = new Point(50, y),
-                Size = new Size(100, 20),
-                Visible = false,
-                Font = new Font("Segoe UI", 10),
-                Tag = "registro"
-            };
-            cboRol = new ComboBox
-            {
-                Location = new Point(50, y + 25),
-                Size = new Size(340, 25),
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                Visible = false,
-                Font = new Font("Segoe UI", 10),
-                Tag = "registro"
-            };
+            Label lblE = CrearLabel("Email:", y);
+            txtEmail = CrearTextBox(y + 25);
+            y += 60;
+
+            Label lblR = CrearLabel("Rol:", y);
+            cboRol = new ComboBox { Location = new Point(50, y + 25), Size = new Size(340, 25), DropDownStyle = ComboBoxStyle.DropDownList, Visible = false, Tag = "registro" };
             cboRol.Items.AddRange(Roles.ObtenerTodos().ToArray());
             cboRol.SelectedIndex = 0;
+            cboRol.SelectedIndexChanged += CboRol_SelectedIndexChanged;
+            y += 60;
+
+            // --- CAMPOS EXTRA (Estudiante y Docente) ---
+
+            // Teléfono (Común para ambos)
+            lblTelefono = CrearLabel("Teléfono:", y);
+            txtTelefono = CrearTextBox(y + 25);
+            y += 60;
+
+            // Campos Exclusivos Estudiante
+            lblCarrera = CrearLabel("Carrera:", y);
+            txtCarrera = CrearTextBox(y + 25);
+
+            // Reutilizamos la posición Y para Especialidad (Docente)
+            lblEspecialidad = new Label { Text = "Especialidad:", Location = new Point(50, y), Size = new Size(200, 20), Visible = false, Tag = "extra_docente" };
+            txtEspecialidad = new TextBox { Location = new Point(50, y + 25), Size = new Size(340, 25), Visible = false, Tag = "extra_docente" };
+
+            y += 60;
+
+            // Campos Exclusivos Estudiante (Semestre)
+            lblSemestre = CrearLabel("Semestre:", y);
+            numSemestre = new NumericUpDown { Location = new Point(50, y + 25), Size = new Size(100, 25), Minimum = 1, Maximum = 12, Visible = false, Tag = "extra_estudiante" };
+
+            // Reutilizamos la posición Y para Departamento (Docente)
+            lblDepartamento = new Label { Text = "Departamento:", Location = new Point(50, y), Size = new Size(200, 20), Visible = false, Tag = "extra_docente" };
+            txtDepartamento = new TextBox { Location = new Point(50, y + 25), Size = new Size(340, 25), Visible = false, Tag = "extra_docente" };
+
 
             // Botones
-            btnAccion = new Button
-            {
-                Text = "INICIAR SESIÓN",
-                Location = new Point(50, 270),
-                Size = new Size(340, 40),
-                BackColor = Color.DodgerBlue,
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 11, FontStyle.Bold),
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
-            };
-            btnAccion.FlatAppearance.BorderSize = 0;
+            btnAccion = new Button { Text = "INICIAR SESIÓN", Location = new Point(50, 300), Size = new Size(340, 40), BackColor = Color.DodgerBlue, ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 11, FontStyle.Bold), Cursor = Cursors.Hand };
             btnAccion.Click += BtnAccion_Click;
 
-            btnCambiarModo = new Button
-            {
-                Text = "¿No tienes cuenta? Regístrate",
-                Location = new Point(50, 320),
-                Size = new Size(340, 30),
-                Font = new Font("Segoe UI", 9),
-                ForeColor = Color.DodgerBlue,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
-            };
+            btnCambiarModo = new Button { Text = "Registrarse", Location = new Point(50, 350), Size = new Size(340, 30), ForeColor = Color.DodgerBlue, FlatStyle = FlatStyle.Flat };
             btnCambiarModo.FlatAppearance.BorderSize = 0;
             btnCambiarModo.Click += BtnCambiarModo_Click;
 
-            // Agregar controles al formulario
-            this.Controls.AddRange(new Control[]
-            {
-                lblTitulo, lblUsuario, txtUsuario, lblContrasena, txtContrasena,
-                chkMostrarContrasena, lblNombre, txtNombreCompleto,
-                lblEmail, txtEmail, lblRol, cboRol,
-                btnAccion, btnCambiarModo
-            });
+            this.Controls.AddRange(new Control[] { lblTitulo, lblU, txtUsuario, lblC, txtContrasena, chkMostrarContrasena,
+                lblN, txtNombreCompleto, lblE, txtEmail, lblR, cboRol,
+                lblTelefono, txtTelefono, lblCarrera, txtCarrera, lblSemestre, numSemestre,
+                lblEspecialidad, txtEspecialidad, lblDepartamento, txtDepartamento,
+                btnAccion, btnCambiarModo });
+        }
+
+        private Label CrearLabel(string texto, int y)
+        {
+            return new Label { Text = texto, Location = new Point(50, y), Size = new Size(200, 20), Visible = false, Tag = "registro" };
+        }
+        private TextBox CrearTextBox(int y)
+        {
+            return new TextBox { Location = new Point(50, y), Size = new Size(340, 25), Visible = false, Tag = "registro" };
         }
 
         private void ConfigurarModoLogin()
@@ -206,108 +137,127 @@ namespace ProyectoDeProgramacion2
             modoRegistro = false;
             this.Size = new Size(450, 450);
             lblTitulo.Text = "INICIAR SESIÓN";
-            btnAccion.Text = "INICIAR SESIÓN";
-            btnAccion.Location = new Point(50, 270);
-            btnCambiarModo.Text = "Registro";
-            btnCambiarModo.Location = new Point(50, 320);
+            btnAccion.Text = "ENTRAR";
+            btnAccion.Location = new Point(50, 280);
+            btnCambiarModo.Text = "¿No tienes cuenta? Regístrate";
+            btnCambiarModo.Location = new Point(50, 330);
 
-            // Ocultar campos de registro
-            foreach (Control c in this.Controls)
-            {
-                if (c.Tag != null && c.Tag.ToString() == "registro")
-                    c.Visible = false;
-            }
-
+            MostrarControlesRegistro(false);
             LimpiarCampos();
         }
 
         private void ConfigurarModoRegistro()
         {
             modoRegistro = true;
-            this.Size = new Size(450, 650);
             lblTitulo.Text = "REGISTRO DE USUARIO";
             btnAccion.Text = "REGISTRARSE";
-            btnAccion.Location = new Point(50, 520);
-            btnCambiarModo.Text = "¿Ya tienes cuenta? Inicia sesión";
-            btnCambiarModo.Location = new Point(50, 570);
+            btnCambiarModo.Text = "Volver al Login";
 
-            // Mostrar campos de registro
+            MostrarControlesRegistro(true);
+            CboRol_SelectedIndexChanged(null, null);
+        }
+
+        private void MostrarControlesRegistro(bool mostrar)
+        {
             foreach (Control c in this.Controls)
             {
                 if (c.Tag != null && c.Tag.ToString() == "registro")
-                    c.Visible = true;
-            }
+                    c.Visible = mostrar;
 
-            LimpiarCampos();
+                // Ocultar los campos extra específicos, el evento del combo los mostrará si hace falta
+                if (c.Tag != null && (c.Tag.ToString() == "extra_estudiante" || c.Tag.ToString() == "extra_docente"))
+                    c.Visible = false;
+            }
         }
 
-        private void BtnCambiarModo_Click(object sender, EventArgs e)
+        private void CboRol_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (modoRegistro)
-                ConfigurarModoLogin();
+            if (!modoRegistro) return;
+
+            string rol = cboRol.SelectedItem != null ? cboRol.SelectedItem.ToString() : "";
+            bool esEstudiante = rol == "Estudiante";
+            bool esDocente = rol == "Docente";
+
+            // Teléfono (Común)
+            lblTelefono.Visible = esEstudiante || esDocente;
+            txtTelefono.Visible = esEstudiante || esDocente;
+
+            // Estudiante
+            lblCarrera.Visible = esEstudiante;
+            txtCarrera.Visible = esEstudiante;
+            lblSemestre.Visible = esEstudiante;
+            numSemestre.Visible = esEstudiante;
+
+            // Docente
+            lblEspecialidad.Visible = esDocente;
+            txtEspecialidad.Visible = esDocente;
+            lblDepartamento.Visible = esDocente;
+            txtDepartamento.Visible = esDocente;
+
+            // Ajustar altura del Formulario
+            if (esEstudiante || esDocente)
+            {
+                this.Size = new Size(450, 850);
+                btnAccion.Location = new Point(50, 700);
+                btnCambiarModo.Location = new Point(50, 750);
+            }
             else
-                ConfigurarModoRegistro();
+            {
+                this.Size = new Size(450, 600);
+                btnAccion.Location = new Point(50, 480);
+                btnCambiarModo.Location = new Point(50, 530);
+            }
         }
 
         private void BtnAccion_Click(object sender, EventArgs e)
         {
             if (modoRegistro)
-                Registrar();
+            {
+                // Llamamos al registro con todos los parámetros
+                var res = authService.RegistrarUsuario(
+                    txtUsuario.Text.Trim(),
+                    txtContrasena.Text,
+                    txtNombreCompleto.Text.Trim(),
+                    cboRol.SelectedItem.ToString(),
+                    txtEmail.Text.Trim(),
+                    txtTelefono.Text.Trim(),
+                    // Si no es estudiante/docente, enviamos cadenas vacías, el servicio sabrá qué ignorar
+                    txtCarrera.Text.Trim(),
+                    (int)numSemestre.Value,
+                    txtEspecialidad.Text.Trim(),
+                    txtDepartamento.Text.Trim()
+                );
+
+                if (res.exito)
+                {
+                    MessageBox.Show(res.mensaje, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ConfigurarModoLogin();
+                }
+                else
+                {
+                    MessageBox.Show(res.mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
             else
-                IniciarSesion();
+            {
+                var res = authService.IniciarSesion(txtUsuario.Text.Trim(), txtContrasena.Text);
+                if (res.exito)
+                {
+                    UsuarioAutenticado = res.usuario;
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show(res.mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
-        private void IniciarSesion()
+        private void BtnCambiarModo_Click(object sender, EventArgs e)
         {
-            var resultado = authService.IniciarSesion(
-                txtUsuario.Text.Trim(),
-                txtContrasena.Text
-            );
-
-            if (resultado.exito)
-            {
-                UsuarioAutenticado = resultado.usuario;
-                MessageBox.Show(
-                    $"Bienvenido {resultado.usuario.NombreCompleto}!\nRol: {resultado.usuario.Rol}",
-                    "Éxito",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
-                );
-                this.DialogResult = DialogResult.OK;
-                this.Close();
-            }
-            else
-            {
-                MessageBox.Show(resultado.mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                txtContrasena.Clear();
-                txtContrasena.Focus();
-            }
-        }
-
-        private void Registrar()
-        {
-            var resultado = authService.RegistrarUsuario(
-                txtUsuario.Text.Trim(),
-                txtContrasena.Text,
-                txtNombreCompleto.Text.Trim(),
-                cboRol.SelectedItem?.ToString() ?? Roles.Estudiante,
-                txtEmail.Text.Trim()
-            );
-
-            if (resultado.exito)
-            {
-                MessageBox.Show(
-                    resultado.mensaje + "\n\nAhora puedes iniciar sesión.",
-                    "Éxito",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
-                );
-                ConfigurarModoLogin();
-            }
-            else
-            {
-                MessageBox.Show(resultado.mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            if (modoRegistro) ConfigurarModoLogin();
+            else ConfigurarModoRegistro();
         }
 
         private void LimpiarCampos()
@@ -316,15 +266,11 @@ namespace ProyectoDeProgramacion2
             txtContrasena.Clear();
             txtNombreCompleto.Clear();
             txtEmail.Clear();
-            if (cboRol.Items.Count > 0)
-                cboRol.SelectedIndex = 0;
-            chkMostrarContrasena.Checked = false;
-            txtUsuario.Focus();
-        }
-
-        private void FormLogin_Load(object sender, EventArgs e)
-        {
-
+            txtTelefono.Clear();
+            txtCarrera.Clear();
+            txtEspecialidad.Clear();
+            txtDepartamento.Clear();
+            numSemestre.Value = 1;
         }
     }
 }

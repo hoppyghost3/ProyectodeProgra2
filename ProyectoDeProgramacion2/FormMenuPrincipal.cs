@@ -72,7 +72,7 @@ namespace ProyectoDeProgramacion2
                     y += 60;
                     AgregarBotonMenu(" Gestionar Estudiantes", y, () => AbrirFormulario(new FormGestionEstudiantes()));
                     y += 60;
-                    AgregarBotonMenu(" Reportes", y, () => MessageBox.Show("Módulo de reportes en desarrollo"));
+                    AgregarBotonMenu(" Reportes", y, () => AbrirFormulario(new FormReportes()));
                     break;
 
                 case "Docente":

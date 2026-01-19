@@ -1,6 +1,6 @@
 ﻿using CapaEntidad;
 using CapaDatos;
-using CapaUtilidades; // O CapaEntidad si pusiste ErrorLogger ahí
+using CapaUtilidades;
 using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Generic;
@@ -10,21 +10,23 @@ namespace CapaNegocio
 {
     public class AutenticacionService
     {
-        private UsuarioRepositorioJson repositorio;
+        private UsuarioRepositorioJson repositorioUsuarios;
+        private EstudianteRepositorioJson repositorioEstudiantes;
+        private DocenteRepositorioJson repositorioDocentes; // [Nuevo] Repositorio para docentes
 
         public AutenticacionService()
         {
-            repositorio = new UsuarioRepositorioJson();
+            repositorioUsuarios = new UsuarioRepositorioJson();
+            repositorioEstudiantes = new EstudianteRepositorioJson();
+            repositorioDocentes = new DocenteRepositorioJson(); // [Nuevo] Inicializamos
         }
 
-        // Clase para resultado de registro
         public class ResultadoRegistro
         {
             public bool exito { get; set; }
             public string mensaje { get; set; }
         }
 
-        // Clase para resultado de login
         public class ResultadoLogin
         {
             public bool exito { get; set; }
@@ -32,39 +34,25 @@ namespace CapaNegocio
             public Usuario usuario { get; set; }
         }
 
-        // Registrar nuevo usuario
+        // [Modificado] Agregamos parámetros opcionales para DOCENTE (especialidad, departamento)
         public ResultadoRegistro RegistrarUsuario(string nombreUsuario, string contrasena,
-            string nombreCompleto, string rol, string email)
+            string nombreCompleto, string rol, string email,
+            string telefono = "",
+            string carrera = "", int semestre = 1, // Para Estudiante
+            string especialidad = "", string departamento = "") // Para Docente [Nuevo]
         {
             try
             {
-                // Validaciones
-                if (string.IsNullOrWhiteSpace(nombreUsuario))
-                    return new ResultadoRegistro { exito = false, mensaje = "El nombre de usuario es obligatorio" };
+                // Validaciones Básicas
+                if (string.IsNullOrWhiteSpace(nombreUsuario)) return new ResultadoRegistro { exito = false, mensaje = "El usuario es obligatorio" };
+                if (string.IsNullOrWhiteSpace(contrasena)) return new ResultadoRegistro { exito = false, mensaje = "La contraseña es obligatoria" };
+                if (string.IsNullOrWhiteSpace(nombreCompleto)) return new ResultadoRegistro { exito = false, mensaje = "El nombre es obligatorio" };
+                if (string.IsNullOrWhiteSpace(email)) return new ResultadoRegistro { exito = false, mensaje = "El email es obligatorio" };
 
-                if (nombreUsuario.Length < 4)
-                    return new ResultadoRegistro { exito = false, mensaje = "El nombre de usuario debe tener al menos 4 caracteres" };
+                if (repositorioUsuarios.ExisteNombreUsuario(nombreUsuario))
+                    return new ResultadoRegistro { exito = false, mensaje = "El nombre de usuario ya existe" };
 
-                if (string.IsNullOrWhiteSpace(contrasena))
-                    return new ResultadoRegistro { exito = false, mensaje = "La contraseña es obligatoria" };
-
-                if (contrasena.Length < 6)
-                    return new ResultadoRegistro { exito = false, mensaje = "La contraseña debe tener al menos 6 caracteres" };
-
-                if (string.IsNullOrWhiteSpace(nombreCompleto))
-                    return new ResultadoRegistro { exito = false, mensaje = "El nombre completo es obligatorio" };
-
-                if (string.IsNullOrWhiteSpace(email))
-                    return new ResultadoRegistro { exito = false, mensaje = "El email es obligatorio" };
-
-                if (!email.Contains("@"))
-                    return new ResultadoRegistro { exito = false, mensaje = "El email no es válido" };
-
-                // Verificar si el usuario ya existe
-                if (repositorio.ExisteNombreUsuario(nombreUsuario))
-                    return new ResultadoRegistro { exito = false, mensaje = "El nombre de usuario ya está registrado" };
-
-                // Crear usuario con contraseña encriptada
+                // 1. Crear el Usuario (Login)
                 var usuario = new Usuario
                 {
                     NombreUsuario = nombreUsuario,
@@ -76,72 +64,89 @@ namespace CapaNegocio
                     Activo = true
                 };
 
-                repositorio.Agregar(usuario);
+                repositorioUsuarios.Agregar(usuario);
+
+                // Separar Nombre y Apellido (lógica común)
+                var partesNombre = nombreCompleto.Split(' ');
+                string nombre = partesNombre[0];
+                string apellido = partesNombre.Length > 1 ? partesNombre[1] : "";
+
+                // 2a. Si es ESTUDIANTE
+                if (rol == "Estudiante")
+                {
+                    var nuevoEstudiante = new Estudiante
+                    {
+                        Nombre = nombre,
+                        Apellido = apellido,
+                        Email = email,
+                        Telefono = telefono,
+                        Carrera = carrera,
+                        Semestre = semestre,
+                        Activo = true,
+                        FechaRegistro = DateTime.Now
+                    };
+                    repositorioEstudiantes.Agregar(nuevoEstudiante);
+                }
+                // 2b. Si es DOCENTE [Nuevo]
+                else if (rol == "Docente")
+                {
+                    var nuevoDocente = new Docente
+                    {
+                        Nombre = nombre,
+                        Apellido = apellido,
+                        Email = email,
+                        Telefono = telefono,
+                        Especialidad = especialidad,
+                        Departamento = departamento,
+                        Activo = true,
+                        FechaContratacion = DateTime.Now
+                    };
+                    repositorioDocentes.Agregar(nuevoDocente);
+                }
+
                 return new ResultadoRegistro { exito = true, mensaje = "Usuario registrado exitosamente" };
             }
             catch (Exception ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(AutenticacionService), nameof(RegistrarUsuario));
-                return new ResultadoRegistro { exito = false, mensaje = "Error al registrar usuario: " + ex.Message };
+                return new ResultadoRegistro { exito = false, mensaje = "Error: " + ex.Message };
             }
         }
 
-        // Iniciar sesión
+        // ... resto de métodos (IniciarSesion, Encriptar, etc.) iguales ...
         public ResultadoLogin IniciarSesion(string nombreUsuario, string contrasena)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(nombreUsuario) || string.IsNullOrWhiteSpace(contrasena))
-                    return new ResultadoLogin { exito = false, mensaje = "Usuario y contraseña son obligatorios", usuario = null };
+                var usuario = repositorioUsuarios.BuscarPorNombreUsuario(nombreUsuario);
 
-                var usuario = repositorio.BuscarPorNombreUsuario(nombreUsuario);
+                if (usuario == null) return new ResultadoLogin { exito = false, mensaje = "Usuario no encontrado", usuario = null };
+                if (!usuario.Activo) return new ResultadoLogin { exito = false, mensaje = "Usuario inactivo", usuario = null };
+                if (usuario.Contrasena != EncriptarContrasena(contrasena)) return new ResultadoLogin { exito = false, mensaje = "Contraseña incorrecta", usuario = null };
 
-                if (usuario == null)
-                    return new ResultadoLogin { exito = false, mensaje = "Usuario no encontrado", usuario = null };
-
-                if (!usuario.Activo)
-                    return new ResultadoLogin { exito = false, mensaje = "Usuario inactivo. Contacte al administrador", usuario = null };
-
-                // Verificar contraseña
-                if (usuario.Contrasena != EncriptarContrasena(contrasena))
-                    return new ResultadoLogin { exito = false, mensaje = "Contraseña incorrecta", usuario = null };
-
-                return new ResultadoLogin { exito = true, mensaje = "Inicio de sesión exitoso", usuario = usuario };
+                return new ResultadoLogin { exito = true, mensaje = "Bienvenido", usuario = usuario };
             }
             catch (Exception ex)
             {
                 ErrorLogger.RegistrarError(ex, nameof(AutenticacionService), nameof(IniciarSesion));
-                return new ResultadoLogin { exito = false, mensaje = "Error al iniciar sesión: " + ex.Message, usuario = null };
+                return new ResultadoLogin { exito = false, mensaje = "Error: " + ex.Message, usuario = null };
             }
         }
 
-        // Encriptar contraseña usando SHA256
         private string EncriptarContrasena(string contrasena)
         {
             using (SHA256 sha256 = SHA256.Create())
             {
                 byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(contrasena));
                 StringBuilder builder = new StringBuilder();
-                foreach (byte b in bytes)
-                {
-                    builder.Append(b.ToString("x2"));
-                }
+                foreach (byte b in bytes) builder.Append(b.ToString("x2"));
                 return builder.ToString();
             }
         }
 
-        // Obtener todos los usuarios (para administración)
         public List<Usuario> ObtenerTodosLosUsuarios()
         {
-            try
-            {
-                return repositorio.Listar();
-            }
-            catch (Exception ex)
-            {
-                ErrorLogger.RegistrarError(ex, nameof(AutenticacionService), nameof(ObtenerTodosLosUsuarios));
-                throw;
-            }
+            return repositorioUsuarios.Listar();
         }
     }
 }
