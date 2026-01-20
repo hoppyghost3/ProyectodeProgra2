@@ -11,7 +11,6 @@ namespace ProyectoDeProgramacion2
         private AutenticacionService authService;
         private bool modoRegistro = false;
 
-        // Controles existentes
         private TextBox txtUsuario, txtContrasena, txtNombreCompleto, txtEmail;
         private ComboBox cboRol;
         private Button btnAccion, btnCambiarModo;
@@ -23,7 +22,7 @@ namespace ProyectoDeProgramacion2
         private NumericUpDown numSemestre;
         private Label lblTelefono, lblCarrera, lblSemestre;
 
-        // [NUEVO] Controles Docentes
+        // Controles Docentes
         private TextBox txtEspecialidad, txtDepartamento;
         private Label lblEspecialidad, lblDepartamento;
 
@@ -84,26 +83,26 @@ namespace ProyectoDeProgramacion2
 
             // --- CAMPOS EXTRA (Estudiante y Docente) ---
 
-            // Teléfono (Común para ambos)
+            // Teléfono
             lblTelefono = CrearLabel("Teléfono:", y);
             txtTelefono = CrearTextBox(y + 25);
             y += 60;
 
-            // Campos Exclusivos Estudiante
+            // Campos  Estudiante
             lblCarrera = CrearLabel("Carrera:", y);
             txtCarrera = CrearTextBox(y + 25);
 
-            // Reutilizamos la posición Y para Especialidad (Docente)
+            // Posición Y Especialidad (Docente)
             lblEspecialidad = new Label { Text = "Especialidad:", Location = new Point(50, y), Size = new Size(200, 20), Visible = false, Tag = "extra_docente" };
             txtEspecialidad = new TextBox { Location = new Point(50, y + 25), Size = new Size(340, 25), Visible = false, Tag = "extra_docente" };
 
             y += 60;
 
-            // Campos Exclusivos Estudiante (Semestre)
+            // Campos  Estudiante (Semestre)
             lblSemestre = CrearLabel("Semestre:", y);
             numSemestre = new NumericUpDown { Location = new Point(50, y + 25), Size = new Size(100, 25), Minimum = 1, Maximum = 12, Visible = false, Tag = "extra_estudiante" };
 
-            // Reutilizamos la posición Y para Departamento (Docente)
+            // Posición Y Departamento (Docente)
             lblDepartamento = new Label { Text = "Departamento:", Location = new Point(50, y), Size = new Size(200, 20), Visible = false, Tag = "extra_docente" };
             txtDepartamento = new TextBox { Location = new Point(50, y + 25), Size = new Size(340, 25), Visible = false, Tag = "extra_docente" };
 
@@ -137,9 +136,9 @@ namespace ProyectoDeProgramacion2
             modoRegistro = false;
             this.Size = new Size(450, 450);
             lblTitulo.Text = "INICIAR SESIÓN";
-            btnAccion.Text = "ENTRAR";
+            btnAccion.Text = "LOG IN";
             btnAccion.Location = new Point(50, 280);
-            btnCambiarModo.Text = "¿No tienes cuenta? Regístrate";
+            btnCambiarModo.Text = "Registrarse";
             btnCambiarModo.Location = new Point(50, 330);
 
             MostrarControlesRegistro(false);
@@ -164,7 +163,6 @@ namespace ProyectoDeProgramacion2
                 if (c.Tag != null && c.Tag.ToString() == "registro")
                     c.Visible = mostrar;
 
-                // Ocultar los campos extra específicos, el evento del combo los mostrará si hace falta
                 if (c.Tag != null && (c.Tag.ToString() == "extra_estudiante" || c.Tag.ToString() == "extra_docente"))
                     c.Visible = false;
             }
@@ -178,23 +176,19 @@ namespace ProyectoDeProgramacion2
             bool esEstudiante = rol == "Estudiante";
             bool esDocente = rol == "Docente";
 
-            // Teléfono (Común)
             lblTelefono.Visible = esEstudiante || esDocente;
             txtTelefono.Visible = esEstudiante || esDocente;
 
-            // Estudiante
             lblCarrera.Visible = esEstudiante;
             txtCarrera.Visible = esEstudiante;
             lblSemestre.Visible = esEstudiante;
             numSemestre.Visible = esEstudiante;
 
-            // Docente
             lblEspecialidad.Visible = esDocente;
             txtEspecialidad.Visible = esDocente;
             lblDepartamento.Visible = esDocente;
             txtDepartamento.Visible = esDocente;
 
-            // Ajustar altura del Formulario
             if (esEstudiante || esDocente)
             {
                 this.Size = new Size(450, 850);
@@ -213,7 +207,6 @@ namespace ProyectoDeProgramacion2
         {
             if (modoRegistro)
             {
-                // Llamamos al registro con todos los parámetros
                 var res = authService.RegistrarUsuario(
                     txtUsuario.Text.Trim(),
                     txtContrasena.Text,
@@ -221,7 +214,6 @@ namespace ProyectoDeProgramacion2
                     cboRol.SelectedItem.ToString(),
                     txtEmail.Text.Trim(),
                     txtTelefono.Text.Trim(),
-                    // Si no es estudiante/docente, enviamos cadenas vacías, el servicio sabrá qué ignorar
                     txtCarrera.Text.Trim(),
                     (int)numSemestre.Value,
                     txtEspecialidad.Text.Trim(),

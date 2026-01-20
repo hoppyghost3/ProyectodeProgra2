@@ -1,4 +1,5 @@
 ﻿using CapaEntidad;
+using ProyectoDeProgramacion2.Gestion;
 using System;
 using System.Drawing;
 using System.Windows.Forms;

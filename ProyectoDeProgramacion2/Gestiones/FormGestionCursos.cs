@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace ProyectoDeProgramacion2
+namespace ProyectoDeProgramacion2.Gestion
 {
     public class FormGestionCursos : Form
     {
@@ -32,9 +32,9 @@ namespace ProyectoDeProgramacion2
 
         private void InicializarComponentes()
         {
-            this.Text = "Gestión de Cursos";
-            this.Size = new Size(1100, 650);
-            this.BackColor = Color.White;
+            Text = "Gestión de Cursos";
+            Size = new Size(1100, 650);
+            BackColor = Color.White;
 
             // Título
             Label lblTitulo = new Label
@@ -45,7 +45,7 @@ namespace ProyectoDeProgramacion2
                 Location = new Point(20, 20),
                 AutoSize = true
             };
-            this.Controls.Add(lblTitulo);
+            Controls.Add(lblTitulo);
 
             // Panel de formulario
             Panel panelForm = new Panel
@@ -123,7 +123,7 @@ namespace ProyectoDeProgramacion2
 
             panelForm.Controls.AddRange(new Control[] { btnNuevo, btnGuardar, btnCancelar });
 
-            this.Controls.Add(panelForm);
+            Controls.Add(panelForm);
 
             // DataGridView
             dgvCursos = new DataGridView
@@ -140,7 +140,7 @@ namespace ProyectoDeProgramacion2
                 BorderStyle = BorderStyle.Fixed3D
             };
             dgvCursos.SelectionChanged += DgvCursos_SelectionChanged;
-            this.Controls.Add(dgvCursos);
+            Controls.Add(dgvCursos);
 
             // Botones de acción del grid
             btnEditar = CrearBoton("Editar Seleccionado", new Point(440, 490), Color.FromArgb(241, 196, 15));
@@ -149,7 +149,7 @@ namespace ProyectoDeProgramacion2
             btnEditar.Click += BtnEditar_Click;
             btnEliminar.Click += BtnEliminar_Click;
 
-            this.Controls.AddRange(new Control[] { btnEditar, btnEliminar });
+            Controls.AddRange(new Control[] { btnEditar, btnEliminar });
         }
 
         private Button CrearBoton(string texto, Point ubicacion, Color color)
