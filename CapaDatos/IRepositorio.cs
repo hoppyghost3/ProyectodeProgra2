@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CapaDatos.Entidades;
 using CapaUtilidades;
 
 namespace CapaDatos
