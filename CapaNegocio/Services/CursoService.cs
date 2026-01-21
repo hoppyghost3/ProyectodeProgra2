@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CapaDatos.Objeto;
 using CapaEntidad.EntidadObjeto;
-using CapaUtilidades;
+using CapaNegocio;
 
 namespace CapaNegocio.Services
 {

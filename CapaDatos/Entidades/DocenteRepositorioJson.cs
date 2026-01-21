@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using CapaEntidad.EntidadPersona;
-using CapaUtilidades;
+using CapaNegocio;
 
 namespace CapaDatos.Entidades
 {

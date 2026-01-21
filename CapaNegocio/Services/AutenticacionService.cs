@@ -1,5 +1,4 @@
 ﻿using CapaEntidad;
-using CapaUtilidades;
 using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Generic;

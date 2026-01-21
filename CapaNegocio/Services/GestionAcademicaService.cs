@@ -4,7 +4,6 @@ using System.Linq;
 using CapaDatos.Entidades;
 using CapaDatos.Objeto;
 using CapaEntidad.EntidadObjeto;
-using CapaUtilidades;
 
 namespace CapaNegocio.Services
 {
