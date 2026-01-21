@@ -10,7 +10,7 @@ namespace CapaEntidad.EntidadObjeto
         public int CursoId { get; set; }
         public string NombreCurso { get; set; }
         public double Nota { get; set; }
-        public string Periodo { get; set; } // "Parcial 1", "Parcial 2", "Final"
+        public string Periodo { get; set; }
         public DateTime FechaRegistro { get; set; }
         public string Observaciones { get; set; }
 

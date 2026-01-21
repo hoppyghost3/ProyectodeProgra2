@@ -87,8 +87,6 @@ namespace CapaDatos.Entidades
             }
         }
 
-        // ---------------- METODOS PRIVADOS ----------------
-
         private List<Estudiante> LeerArchivo()
         {
             if (!File.Exists(rutaArchivo))

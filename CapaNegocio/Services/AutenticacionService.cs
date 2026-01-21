@@ -13,13 +13,13 @@ namespace CapaNegocio.Services
     {
         private UsuarioRepositorioJson repositorioUsuarios;
         private EstudianteRepositorioJson repositorioEstudiantes;
-        private DocenteRepositorioJson repositorioDocentes; // [Nuevo] Repositorio para docentes
+        private DocenteRepositorioJson repositorioDocentes;
 
         public AutenticacionService()
         {
             repositorioUsuarios = new UsuarioRepositorioJson();
             repositorioEstudiantes = new EstudianteRepositorioJson();
-            repositorioDocentes = new DocenteRepositorioJson(); // [Nuevo] Inicializamos
+            repositorioDocentes = new DocenteRepositorioJson(); 
         }
 
         public class ResultadoRegistro
@@ -35,16 +35,15 @@ namespace CapaNegocio.Services
             public Usuario usuario { get; set; }
         }
 
-        // [Modificado] Agregamos parámetros opcionales para DOCENTE (especialidad, departamento)
         public ResultadoRegistro RegistrarUsuario(string nombreUsuario, string contrasena,
             string nombreCompleto, string rol, string email,
             string telefono = "",
-            string carrera = "", int semestre = 1, // Para Estudiante
-            string especialidad = "", string departamento = "") // Para Docente [Nuevo]
+            string carrera = "", int semestre = 1, 
+            string especialidad = "", string departamento = "") 
         {
             try
             {
-                // Validaciones Básicas
+                // Validaciones 
                 if (string.IsNullOrWhiteSpace(nombreUsuario)) return new ResultadoRegistro { exito = false, mensaje = "El usuario es obligatorio" };
                 if (string.IsNullOrWhiteSpace(contrasena)) return new ResultadoRegistro { exito = false, mensaje = "La contraseña es obligatoria" };
                 if (string.IsNullOrWhiteSpace(nombreCompleto)) return new ResultadoRegistro { exito = false, mensaje = "El nombre es obligatorio" };
@@ -53,7 +52,7 @@ namespace CapaNegocio.Services
                 if (repositorioUsuarios.ExisteNombreUsuario(nombreUsuario))
                     return new ResultadoRegistro { exito = false, mensaje = "El nombre de usuario ya existe" };
 
-                // 1. Crear el Usuario (Login)
+                // 1. Creacion usuario
                 var usuario = new Usuario
                 {
                     NombreUsuario = nombreUsuario,
@@ -67,12 +66,11 @@ namespace CapaNegocio.Services
 
                 repositorioUsuarios.Agregar(usuario);
 
-                // Separar Nombre y Apellido (lógica común)
+                // Nombre y Apellido 
                 var partesNombre = nombreCompleto.Split(' ');
                 string nombre = partesNombre[0];
                 string apellido = partesNombre.Length > 1 ? partesNombre[1] : "";
 
-                // 2a. Si es ESTUDIANTE
                 if (rol == "Estudiante")
                 {
                     var nuevoEstudiante = new Estudiante
@@ -88,7 +86,6 @@ namespace CapaNegocio.Services
                     };
                     repositorioEstudiantes.Agregar(nuevoEstudiante);
                 }
-                // 2b. Si es DOCENTE [Nuevo]
                 else if (rol == "Docente")
                 {
                     var nuevoDocente = new Docente
@@ -114,7 +111,6 @@ namespace CapaNegocio.Services
             }
         }
 
-        // ... resto de métodos (IniciarSesion, Encriptar, etc.) iguales ...
         public ResultadoLogin IniciarSesion(string nombreUsuario, string contrasena)
         {
             try

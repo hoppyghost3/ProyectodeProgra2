@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using CapaEntidad;
-using CapaUtilidades; // O CapaEntidad si pusiste ErrorLogger ahí
+using CapaUtilidades; 
 
 namespace CapaDatos.Entidades
 {
@@ -18,7 +18,6 @@ namespace CapaDatos.Entidades
             {
                 List<Usuario> lista = LeerArchivo();
 
-                // Generar ID automático
                 usuario.Id = lista.Count > 0 ? lista.Max(u => u.Id) + 1 : 1;
 
                 lista.Add(usuario);
@@ -92,7 +91,7 @@ namespace CapaDatos.Entidades
             }
         }
 
-        // Métodos específicos para autenticación
+        // Métodos autenticación
         public Usuario BuscarPorNombreUsuario(string nombreUsuario)
         {
             try

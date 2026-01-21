@@ -36,10 +36,6 @@ namespace CapaDatos
                 throw new InvalidOperationException($"Error al registrar {typeof(T).Name}", ex);
             }
         }
-
-        /// <summary>
-        /// Método abstracto para que cada servicio implemente sus validaciones específicas
-        /// </summary>
         protected abstract void ValidarEntidad(T entidad);
     }
 }

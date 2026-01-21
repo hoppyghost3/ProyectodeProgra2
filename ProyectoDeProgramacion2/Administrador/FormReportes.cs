@@ -99,13 +99,11 @@ namespace ProyectoDeProgramacion2
         {
             try
             {
-                // Obtener conteos usando los servicios existentes
                 int cantEstudiantes = estudianteService.ListarEstudiantes().Count;
                 int cantDocentes = docenteService.ObtenerTodos().Count;
                 int cantCursos = cursoService.ObtenerCursos().Count;
                 int cantUsuarios = authService.ObtenerTodosLosUsuarios().Count;
 
-                // Buscar los labels por nombre y actualizar su texto
                 ActualizarValorTarjeta("lblTotalEstudiantes", cantEstudiantes.ToString());
                 ActualizarValorTarjeta("lblTotalDocentes", cantDocentes.ToString());
                 ActualizarValorTarjeta("lblTotalCursos", cantCursos.ToString());

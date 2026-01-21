@@ -90,7 +90,6 @@ namespace CapaDatos.Objeto
             }
         }
 
-        // Métodos adicionales específicos
         public List<Calificacion> ObtenerPorEstudiante(int estudianteId)
         {
             try

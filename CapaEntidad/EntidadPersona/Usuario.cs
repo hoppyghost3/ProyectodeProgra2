@@ -20,8 +20,6 @@ namespace CapaEntidad
             Activo = true;
         }
     }
-
-    // ← Esta clase debe estar aquí
     public static class Roles
     {
         public const string Administrador = "Administrador";

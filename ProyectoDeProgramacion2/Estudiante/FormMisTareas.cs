@@ -40,7 +40,7 @@ namespace ProyectoDeProgramacion2
 
         private void CargarTareas()
         {
-            // Estrategia: Obtener cursos inscritos y luego buscar las tareas de cada curso
+            // Obtener cursos inscritos y luego buscar las tareas de cada curso
             var inscripciones = gestionService.ObtenerInscripcionesPorEstudiante(usuarioActual.Id);
             List<Tarea> todasLasTareas = new List<Tarea>();
 

@@ -90,7 +90,6 @@ namespace CapaDatos.Objeto
             }
         }
 
-        // Métodos adicionales
         public List<Tarea> ObtenerPorCurso(int cursoId)
         {
             try
@@ -123,7 +122,6 @@ namespace CapaDatos.Objeto
         }
     }
 
-    // Repositorio para entregas de tareas
     public class EntregaTareaRepositorioJson
     {
         private string rutaArchivo = "entregas_tareas.json";

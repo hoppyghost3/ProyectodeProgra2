@@ -27,16 +27,13 @@ namespace CapaNegocio.Services
             estudianteRepo = new EstudianteRepositorioJson();
         }
 
-        // ============ INSCRIPCIONES ============
         public (bool exito, string mensaje) InscribirEstudianteACurso(int estudianteId, int cursoId)
         {
             try
             {
-                // Verificar si ya está inscrito
                 if (inscripcionRepo.ExisteInscripcion(estudianteId, cursoId))
                     return (false, "El estudiante ya está inscrito en este curso");
 
-                // Obtener curso
                 var curso = cursoRepo.BuscarPorId(cursoId);
                 if (curso == null)
                     return (false, "Curso no encontrado");
@@ -47,12 +44,10 @@ namespace CapaNegocio.Services
                 if (curso.CupoDisponible <= 0)
                     return (false, "No hay cupos disponibles");
 
-                // Obtener estudiante
                 var estudiante = estudianteRepo.BuscarPorId(estudianteId);
                 if (estudiante == null)
                     return (false, "Estudiante no encontrado");
 
-                // Crear inscripción
                 var inscripcion = new Inscripcion
                 {
                     EstudianteId = estudianteId,
@@ -65,13 +60,11 @@ namespace CapaNegocio.Services
 
                 inscripcionRepo.Agregar(inscripcion);
 
-                // Actualizar cupo del curso
                 curso.CupoDisponible--;
                 if (!curso.EstudiantesInscritos.Contains(estudianteId))
                     curso.EstudiantesInscritos.Add(estudianteId);
                 cursoRepo.Modificar(curso);
 
-                // Actualizar cursos del estudiante
                 if (!estudiante.CursosInscritos.Contains(cursoId))
                 {
                     estudiante.CursosInscritos.Add(cursoId);
@@ -97,7 +90,6 @@ namespace CapaNegocio.Services
             return inscripcionRepo.ObtenerPorCurso(cursoId);
         }
 
-        // ============ CALIFICACIONES ============
         public (bool exito, string mensaje) RegistrarCalificacion(Calificacion calificacion)
         {
             try
@@ -108,7 +100,6 @@ namespace CapaNegocio.Services
                 if (calificacion.Nota < 0 || calificacion.Nota > 100)
                     return (false, "La nota debe estar entre 0 y 100");
 
-                // Verificar que el estudiante esté inscrito en el curso
                 if (!inscripcionRepo.ExisteInscripcion(calificacion.EstudianteId, calificacion.CursoId))
                     return (false, "El estudiante no está inscrito en este curso");
 
@@ -144,7 +135,6 @@ namespace CapaNegocio.Services
             return calificaciones.Average(c => c.Nota);
         }
 
-        // ============ TAREAS ============
         public (bool exito, string mensaje) CrearTarea(Tarea tarea)
         {
             try

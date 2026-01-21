@@ -130,7 +130,7 @@ namespace ProyectoDeProgramacion2
 
         private void BtnInscribir_Click(object sender, EventArgs e)
         {
-            // Validar que haya una fila seleccionada
+            // Validacion fila seleccionada
             if (dgvCursosDisponibles.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Por favor, seleccione un curso de la lista.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -140,7 +140,6 @@ namespace ProyectoDeProgramacion2
             // Obtener el objeto Curso de la fila seleccionada
             var cursoSeleccionado = (Curso)dgvCursosDisponibles.SelectedRows[0].DataBoundItem;
 
-            // Confirmación opcional
             var confirmacion = MessageBox.Show(
                 $"¿Desea inscribirse en el curso '{cursoSeleccionado.Nombre}'?",
                 "Confirmar Inscripción",
